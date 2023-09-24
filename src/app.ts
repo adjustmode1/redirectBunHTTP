@@ -1,5 +1,5 @@
+import 'reflect-metadata'
 import {loadConfiguration} from "../load-config.ts";
-
 class App {
     private static server: App;
     private port: number = 3000;
