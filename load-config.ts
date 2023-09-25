@@ -1,17 +1,18 @@
 import * as yaml from 'js-yaml';
 import * as fs from 'fs';
-import * as path from 'path';
 
-export function loadConfiguration(){
+export function loadConfiguration(): Record<string,unknown>{
     try {
+        let config: any;
         if(process.env.NODE_ENV === "development"){
-            const doc = yaml.load(fs.readFileSync("./env.development.yaml","utf8"))
-            console.log(doc);
+            config = yaml.load(fs.readFileSync("./env.development.yaml","utf8"), undefined)
+            console.log(config);
         }else{
-            const doc = yaml.load(fs.readFileSync("./env.test.yaml","utf8"))
-            console.log(doc);
+            config = yaml.load(fs.readFileSync("./env.test.yaml","utf8"), undefined)
+            console.log(config);
         }
 
+        return config as unknown as Record<string,unknown>;
     } catch (e) {
         console.log(e);
     }

@@ -1,10 +1,16 @@
 import 'reflect-metadata'
-import {loadConfiguration} from "../load-config.ts";
+import Elysia from 'elysia';
+import { cors } from '@elysiajs/cors';
+import {ShortLinkController} from "./modules/short-link/short-link.controller.ts";
+import {PORT_SERVER} from "./constraint.ts";
+
 class App {
+    private readonly elysia: Elysia;
     private static server: App;
     private port: number = 3000;
     constructor(port: number, option?:any) {
         this.port = port;
+        this.elysia = new Elysia();
     }
 
     static getHTTPServer(port = 3000, option?:any): App {
@@ -14,18 +20,27 @@ class App {
 
         return App.server;
     }
-    start(): any {
-       return Bun.serve({
-           port: this.port,
-           fetch(request: Request): Response | Promise<Response> {
-               return new Response("bun!");
-           }
-       })
+
+    useRoute(route: any): unknown {
+        return this.elysia.use(route)
+    }
+
+    useCors(cors: Function): unknown {
+        return this.elysia.use(cors)
+    }
+
+    start(): unknown {
+       return this.elysia.listen(this.port);
     }
 }
+const server = App.getHTTPServer(PORT_SERVER);
 
-loadConfiguration();
+const shortLinkRoutes = new ShortLinkController();
 
-const server = App.getHTTPServer(3000);
+//Server config
+server.useCors(cors())
+server.useRoute(shortLinkRoutes.routes());
 
+
+// Start server
 server.start();
